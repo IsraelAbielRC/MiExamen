@@ -48,6 +48,11 @@ public class imagenes extends Fragment {
 
     }
     private  void SaveImages(){
+        if(!Libreria.isConneted(getContext()))
+        {
+            Toast.makeText(getContext(),"Verifica la señal de internet.",Toast.LENGTH_LONG).show();
+            return;
+        }
         if(listaImg.size() > 0){
             for (int i =0; i < listaImg.size(); i++){
                 Uri _fileUri = listaImg.get(i);
@@ -97,6 +102,7 @@ public class imagenes extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        listaImg.clear();
         _btnGaleria = (Button) view.findViewById(R.id.btnGaleria);
         _btnSave= (Button) view.findViewById(R.id.btnSave);
         _gvColecccion = (GridView)  view.findViewById(R.id.gvColeccion);
