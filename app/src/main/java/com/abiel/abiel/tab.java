@@ -1,19 +1,32 @@
 package com.abiel.abiel;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
+import android.content.ClipData;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.GridView;
 
+import com.abiel.abiel.Controller.GridViewAdapter;
 import com.abiel.abiel.Controller.PagerController;
 import com.google.android.material.tabs.TabItem;
 import com.google.android.material.tabs.TabLayout;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class tab extends AppCompatActivity {
     TabLayout _tabLayout;
     TabItem _tabApi, _tabUbicacion, _tabImaganes;
     PagerController _pageController;
     ViewPager _pager;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,5 +56,8 @@ public class tab extends AppCompatActivity {
             }
         });
         _pager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(_tabLayout));
+
     }
+
+
 }

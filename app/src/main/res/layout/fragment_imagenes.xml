@@ -4,9 +4,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Controller.imagenes">
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Imagenes" />
-
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <Button
+            android:id="@+id/btnGaleria"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/btnGalaria"
+            android:backgroundTint="@color/btnColor"
+            />
+        <GridView
+            android:id="@+id/gvColeccion"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:columnWidth="100dp"
+            android:horizontalSpacing="5dp"
+            android:numColumns="3"
+            android:verticalSpacing="5dp"
+            />
+    </LinearLayout>
 </FrameLayout>
