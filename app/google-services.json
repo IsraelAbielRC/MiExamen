@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "671252719890",
+    "project_id": "miexamen-c8c88",
+    "storage_bucket": "miexamen-c8c88.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:671252719890:android:00227df5d231c221f4ebcb",
+        "android_client_info": {
+          "package_name": "com.abiel.abiel"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "671252719890-0lujge9ak53jupe4isqp8vgdr7fggjk1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDepDTvg7uU7CTZnfOZmspDqiXVQ79DLqs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "671252719890-0lujge9ak53jupe4isqp8vgdr7fggjk1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -16,6 +16,7 @@ import com.abiel.abiel.Controller.GridViewAdapter;
 import com.abiel.abiel.Controller.PagerController;
 import com.google.android.material.tabs.TabItem;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.FirebaseApp;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,7 @@ public class tab extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_tab);
         _tabLayout = findViewById(R.id.tablayout);
         _tabApi = findViewById(R.id.tabapi);

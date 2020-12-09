@@ -15,19 +15,24 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.abiel.abiel.R;
 import com.abiel.abiel.tab;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class imagenes extends Fragment {
 
     int PICK_IMAGE = 100;
     Uri imgUri;
-    Button _btnGaleria;
+    Button _btnGaleria,_btnSave;
     GridView _gvColecccion;
     List<Uri> listaImg = new ArrayList<>();
     GridViewAdapter _collectionAdapter;
@@ -41,6 +46,21 @@ public class imagenes extends Fragment {
         _intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(_intent,"Selecciona las imagenes"),PICK_IMAGE);
 
+    }
+    private  void SaveImages(){
+        if(listaImg.size() > 0){
+            for (int i =0; i < listaImg.size(); i++){
+                Uri _fileUri = listaImg.get(i);
+                FirebaseApp.initializeApp(getContext());
+                StorageReference _folder = FirebaseStorage.getInstance().getReference().child("Imagenes");
+                final  StorageReference _fileName =  _folder.child("file"+_fileUri.getLastPathSegment());
+                _fileName.putFile(_fileUri).addOnSuccessListener(tSnapShop -> _fileName.getDownloadUrl().addOnSuccessListener(uri -> {
+                    HashMap<String, String> _hashMap = new HashMap<>();
+                    _hashMap.put("Link", String.valueOf(uri));
+                    Toast.makeText(getContext(),"Se Guardo "+ _fileName,Toast.LENGTH_SHORT).show();
+                }));
+            }
+        }
     }
 
     @Override
@@ -78,11 +98,18 @@ public class imagenes extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         _btnGaleria = (Button) view.findViewById(R.id.btnGaleria);
+        _btnSave= (Button) view.findViewById(R.id.btnSave);
         _gvColecccion = (GridView)  view.findViewById(R.id.gvColeccion);
         _btnGaleria.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 abrirGaleria();
+            }
+        });
+        _btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SaveImages();
             }
         });
     }
