@@ -11,9 +11,12 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +25,17 @@ import android.widget.Toast;
 
 import com.abiel.abiel.Models.UbicacionModel;
 import com.abiel.abiel.R;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -39,10 +53,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class ubicacion extends Fragment {
+
+public class ubicacion extends Fragment implements OnMapReadyCallback , GoogleMap.OnMapClickListener {
     FirebaseFirestore _db;
     List<UbicacionModel> _ubicaciones;
     UbicacionModel _ubicacion;
+    GoogleMap mapa;
     public ubicacion() {
 
     }
@@ -59,22 +75,20 @@ public class ubicacion extends Fragment {
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         }
     }
-
     private void getUbicacion() {
         LocationManager lManager = (LocationManager) getContext().getSystemService(getContext().LOCATION_SERVICE);
         LocationListener lListener = new LocationListener() {
             @Override
             public void onLocationChanged(@NonNull Location location) {
                     Toast.makeText(getContext(),"" + location.getLongitude() + " " + location.getAltitude(),Toast.LENGTH_SHORT).show();
-                    Geocoder _gCoder = new Geocoder(getContext(), Locale.getDefault());
                     Map<String,Object> _location = new HashMap<>();
                     _location.put("Long", location.getLongitude());
-                    _location.put("Alt", location.getAltitude());
+                    _location.put("Lat", location.getLatitude());
 
                     _db.collection("Ubicaciones").add(_location).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                         @Override
                         public void onSuccess(DocumentReference documentReference) {
-                            Toast.makeText(getContext(),"Se Creo Documento " + documentReference.getId(),Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(),"Se agrego ubicación " + documentReference.getId(),Toast.LENGTH_SHORT).show();
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
@@ -90,7 +104,7 @@ public class ubicacion extends Fragment {
                                 for (QueryDocumentSnapshot document : task.getResult()) {
                                     _ubicacion = new UbicacionModel();
                                     _ubicacion.SetLongitud(document.getDouble("Long"));
-                                    _ubicacion.SetAltitud(document.getDouble("Alt"));
+                                    _ubicacion.SetAltitud(document.getDouble("Lat"));
                                     _ubicaciones.add(_ubicacion);
                                 }
                                 Toast.makeText(getContext(),"Numero de Elementos " + _ubicaciones.size(),Toast.LENGTH_SHORT).show();
@@ -109,6 +123,13 @@ public class ubicacion extends Fragment {
         _ubicaciones = new ArrayList<>();
         solicitarPermisos();
         getUbicacion();
+
+
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
     }
 
     @Override
@@ -120,7 +141,41 @@ public class ubicacion extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_ubicacion, container, false);
+        View view = inflater.inflate(R.layout.fragment_ubicacion, container, false);
+        int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getContext());
+        if(status == ConnectionResult.SUCCESS){
+            SupportMapFragment smf= (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapa);
+            smf.getMapAsync(this);
+        }
+        return view;
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mapa = googleMap;
+        LatLng casa = new LatLng( 19.7726965,-98.9737864);
+        mapa.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        mapa.getUiSettings().setZoomControlsEnabled(false);
+        mapa.moveCamera(CameraUpdateFactory.newLatLngZoom(casa, 15));
+
+        mapa.addMarker(new MarkerOptions()
+                .position(casa)
+                .title("Casa")
+                .snippet("Mi Casa")
+                .icon(BitmapDescriptorFactory
+                        .fromResource(android.R.drawable.ic_menu_compass))
+                .anchor(0.5f, 0.5f));
+        mapa.setOnMapClickListener(this);
+        if (ActivityCompat.checkSelfPermission(getContext(),
+                android.Manifest.permission.ACCESS_FINE_LOCATION) ==
+                PackageManager.PERMISSION_GRANTED) {
+            mapa.setMyLocationEnabled(true);
+            mapa.getUiSettings().setCompassEnabled(true);
+        }
+    }
+
+    @Override
+    public void onMapClick(LatLng latLng) {
+
     }
 }
