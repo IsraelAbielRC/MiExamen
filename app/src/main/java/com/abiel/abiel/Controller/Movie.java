@@ -50,17 +50,20 @@ public class Movie extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        moviewList = view.findViewById(R.id.MovieLV);
-        alist = new ArrayList<>();
-        requestQueue = Volley.newRequestQueue(getContext());
-        _helper = new SQLiteHelper(getContext());
-         db = _helper.getWritableDatabase();
-        adapter = new GridViewMovieAdapter(getContext(),R.id.MovieLV, alist);
-        if(db != null) {
-            GetAllData();
-        }
+        try {
+            moviewList = view.findViewById(R.id.MovieLV);
+            alist = new ArrayList<>();
+            requestQueue = Volley.newRequestQueue(getContext());
+            _helper = new SQLiteHelper(getContext());
+            db = _helper.getWritableDatabase();
+            adapter = new GridViewMovieAdapter(getContext(),R.id.MovieLV, alist);
+            if(db != null) {
+                GetAllData();
+            }
 
-        moviewList.setAdapter(adapter);
+            moviewList.setAdapter(adapter);
+        }
+        catch (Exception ex){}
     }
     private  void GetAllData(){
        if(Libreria.isConneted(getContext())){

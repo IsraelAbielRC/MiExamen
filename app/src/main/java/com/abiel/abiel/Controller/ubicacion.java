@@ -133,10 +133,15 @@ public class ubicacion extends Fragment implements OnMapReadyCallback , GoogleMa
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        _db = FirebaseFirestore.getInstance();
-        _ubicaciones = new ArrayList<>();
-        solicitarPermisos();
-        getUbicacion();
+        try{
+            _db = FirebaseFirestore.getInstance();
+            _ubicaciones = new ArrayList<>();
+            solicitarPermisos();
+            getUbicacion();
+        }
+        catch (Exception ex){
+
+        }
     }
 
     @Override

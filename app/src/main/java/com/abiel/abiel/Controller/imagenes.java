@@ -102,22 +102,25 @@ public class imagenes extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        listaImg.clear();
-        _btnGaleria = (Button) view.findViewById(R.id.btnGaleria);
-        _btnSave= (Button) view.findViewById(R.id.btnSave);
-        _gvColecccion = (GridView)  view.findViewById(R.id.gvColeccion);
-        _btnGaleria.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                abrirGaleria();
-            }
-        });
-        _btnSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SaveImages();
-            }
-        });
+        try {
+            listaImg.clear();
+            _btnGaleria = (Button) view.findViewById(R.id.btnGaleria);
+            _btnSave= (Button) view.findViewById(R.id.btnSave);
+            _gvColecccion = (GridView)  view.findViewById(R.id.gvColeccion);
+            _btnGaleria.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    abrirGaleria();
+                }
+            });
+            _btnSave.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    SaveImages();
+                }
+            });
+        }
+        catch (Exception ex){}
     }
 
     @Override
