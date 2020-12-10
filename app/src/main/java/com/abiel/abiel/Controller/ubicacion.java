@@ -128,7 +128,7 @@ public class ubicacion extends Fragment implements OnMapReadyCallback , GoogleMa
             }
         };
         int pcheck = ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION);
-        lManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 1, lListener);
+        lManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000 * 60 * 30, 1, lListener);
     }
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
