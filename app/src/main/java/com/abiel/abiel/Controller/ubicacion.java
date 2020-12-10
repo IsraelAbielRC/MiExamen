@@ -105,6 +105,7 @@ public class ubicacion extends Fragment implements OnMapReadyCallback , GoogleMa
                                     _ubicacion = new UbicacionModel();
                                     _ubicacion.SetLongitud(document.getDouble("Long"));
                                     _ubicacion.SetAltitud(document.getDouble("Lat"));
+                                    onMapClick(new LatLng(_ubicacion.GetAltitud(), _ubicacion.GetLongitud()));
                                     _ubicaciones.add(_ubicacion);
                                 }
                                 Toast.makeText(getContext(),"Numero de Elementos " + _ubicaciones.size(),Toast.LENGTH_SHORT).show();
@@ -176,6 +177,6 @@ public class ubicacion extends Fragment implements OnMapReadyCallback , GoogleMa
 
     @Override
     public void onMapClick(LatLng latLng) {
-
+        mapa.addMarker(new MarkerOptions().position(latLng).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
     }
 }
