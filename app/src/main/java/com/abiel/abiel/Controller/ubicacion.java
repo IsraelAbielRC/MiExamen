@@ -76,11 +76,18 @@ public class ubicacion extends Fragment implements OnMapReadyCallback , GoogleMa
         }
     }
     private void getUbicacion() {
+
         LocationManager lManager = (LocationManager) getContext().getSystemService(getContext().LOCATION_SERVICE);
         LocationListener lListener = new LocationListener() {
             @Override
             public void onLocationChanged(@NonNull Location location) {
+                if(!Libreria.isConneted(getContext()))
+                {
+                    Toast.makeText(getContext(),"Verifica la señal de internet.",Toast.LENGTH_LONG).show();
+                    return;
+                }
                     Toast.makeText(getContext(),"" + location.getLongitude() + " " + location.getAltitude(),Toast.LENGTH_SHORT).show();
+
                     Map<String,Object> _location = new HashMap<>();
                     _location.put("Long", location.getLongitude());
                     _location.put("Lat", location.getLatitude());
@@ -100,6 +107,12 @@ public class ubicacion extends Fragment implements OnMapReadyCallback , GoogleMa
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             if(task.isSuccessful()){
+
+                                if(!Libreria.isConneted(getContext()))
+                                {
+                                    Toast.makeText(getContext(),"Verifica la señal de internet.",Toast.LENGTH_LONG).show();
+                                    return;
+                                }
                                 _ubicaciones.clear();
                                 for (QueryDocumentSnapshot document : task.getResult()) {
                                     _ubicacion = new UbicacionModel();
@@ -124,8 +137,6 @@ public class ubicacion extends Fragment implements OnMapReadyCallback , GoogleMa
         _ubicaciones = new ArrayList<>();
         solicitarPermisos();
         getUbicacion();
-
-
     }
 
     @Override

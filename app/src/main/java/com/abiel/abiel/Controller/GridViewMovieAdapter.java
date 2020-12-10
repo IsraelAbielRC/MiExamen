@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 
 import com.abiel.abiel.Models.MovieModel;
 import com.abiel.abiel.R;
+import com.google.android.material.tabs.TabLayout;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -54,7 +55,8 @@ public class GridViewMovieAdapter extends BaseAdapter {
         ImageView _img = view.findViewById(R.id.imgmovie);
         TextView _Detail = view.findViewById(R.id.moviedata);
         _Detail.setText(movieList.get(i).getDetail());
-        Picasso.get().load(movieList.get(i).getLink()).into(_img);
+        String _link = movieList.get(i).getLink();
+        Picasso.get().load(_link).placeholder(R.drawable.ic_warning).error(R.drawable.ic_warning).into(_img);
         return view;
     }
 }
