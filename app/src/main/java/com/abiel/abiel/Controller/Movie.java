@@ -2,13 +2,30 @@ package com.abiel.abiel.Controller;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
+import android.widget.Toast;
 
+import com.abiel.abiel.Models.MovieModel;
 import com.abiel.abiel.R;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -16,34 +33,58 @@ import com.abiel.abiel.R;
  * create an instance of this fragment.
  */
 public class Movie extends Fragment {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    ListView moviewList;
+    final String url = "https://rallycoding.herokuapp.com/api/music_albums";
+    List<MovieModel> alist;
+    GridViewMovieAdapter adapter;
+    RequestQueue requestQueue;
 
     public Movie() {
-        // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment Movie.
-     */
-    // TODO: Rename and change types and number of parameters
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        moviewList = view.findViewById(R.id.MovieLV);
+        alist = new ArrayList<>();
+        requestQueue = Volley.newRequestQueue(getContext());
+        GetAllData();
+        adapter = new GridViewMovieAdapter(getContext(),R.id.MovieLV, alist);
+        moviewList.setAdapter(adapter);
+    }
+    private  void GetAllData(){
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                JSONArray jsonArray = response;
+                try {
+                    for(int i=0;i<jsonArray.length();i++)
+                    {
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        String titulo = jsonObject.getString("title");
+                        String link = jsonObject.getString("image");
+                        alist.add(new MovieModel(titulo," ",link));
+                    }
+                    adapter.notifyDataSetChanged();//To prevent app from crashing when updating
+                    //UI through background Thread
+                }
+                catch (Exception w)
+                {
+                    Toast.makeText(getContext(),w.getMessage(),Toast.LENGTH_LONG).show();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getContext(),error.getMessage(),Toast.LENGTH_LONG).show();
+            }
+        });
+        requestQueue.add(jsonArrayRequest);
+    }
+
     public static Movie newInstance(String param1, String param2) {
         Movie fragment = new Movie();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -52,8 +93,6 @@ public class Movie extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
 
