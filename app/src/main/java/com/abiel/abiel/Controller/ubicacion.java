@@ -2,6 +2,8 @@ package com.abiel.abiel.Controller;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -18,21 +20,32 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.abiel.abiel.Models.UbicacionModel;
 import com.abiel.abiel.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ubicacion#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
 public class ubicacion extends Fragment {
-
-
+    FirebaseFirestore _db;
+    List<UbicacionModel> _ubicaciones;
+    UbicacionModel _ubicacion;
     public ubicacion() {
 
     }
-
-    // TODO: Rename and change types and number of parameters
     public static ubicacion newInstance(String param1, String param2) {
         ubicacion fragment = new ubicacion();
         Bundle args = new Bundle();
@@ -52,15 +65,48 @@ public class ubicacion extends Fragment {
         LocationListener lListener = new LocationListener() {
             @Override
             public void onLocationChanged(@NonNull Location location) {
-                Toast.makeText(getContext(),"" + location.getLongitude() + " " + location.getAltitude(),Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(),"" + location.getLongitude() + " " + location.getAltitude(),Toast.LENGTH_SHORT).show();
+                    Geocoder _gCoder = new Geocoder(getContext(), Locale.getDefault());
+                    Map<String,Object> _location = new HashMap<>();
+                    _location.put("Long", location.getLongitude());
+                    _location.put("Alt", location.getAltitude());
+
+                    _db.collection("Ubicaciones").add(_location).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                        @Override
+                        public void onSuccess(DocumentReference documentReference) {
+                            Toast.makeText(getContext(),"Se Creo Documento " + documentReference.getId(),Toast.LENGTH_SHORT).show();
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(getContext(),"Ocurrio el un error " + e.getMessage(),Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    _db.collection("Ubicaciones").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if(task.isSuccessful()){
+                                _ubicaciones.clear();
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    _ubicacion = new UbicacionModel();
+                                    _ubicacion.SetLongitud(document.getDouble("Long"));
+                                    _ubicacion.SetAltitud(document.getDouble("Alt"));
+                                    _ubicaciones.add(_ubicacion);
+                                }
+                                Toast.makeText(getContext(),"Numero de Elementos " + _ubicaciones.size(),Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
             }
         };
         int pcheck = ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION);
-        lManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, lListener);
+        lManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 1, lListener);
     }
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        _db = FirebaseFirestore.getInstance();
+        _ubicaciones = new ArrayList<>();
         solicitarPermisos();
         getUbicacion();
     }
